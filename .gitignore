@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.*
+!.env.example
+chromedriver.exe
+chromedriver-mobile/
+screenshots/archive-failed/
+screenshots/archive-debug/
+
+allure-results/
+allure-report/
