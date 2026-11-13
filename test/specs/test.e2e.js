@@ -1,4 +1,3 @@
-
 const { expect } = require('chai');
 const { driver, $, $$ } = require('@wdio/globals');
 
@@ -28,7 +27,7 @@ describe('Advanced Mobile Testing - SauceDemo', function () {
         expect(await products.isDisplayed()).to.equal(true);
     });
 
-    // Skenario 3: Login gagal
+    // Skenario 3: Login gagal karena username salah
     it('3. Should show error for invalid username', async function () {
         await helper.resetApp();
 
@@ -41,8 +40,21 @@ describe('Advanced Mobile Testing - SauceDemo', function () {
         expect(await errorMessage.isDisplayed()).to.equal(true);
     });
 
-    // Skenario 4: Sorting harga terendah
-    it('4. Should sort products by price low to high', async function () {
+    // Skenario 4: Login gagal karena password salah
+    it('4. Should show error for wrong password', async function () {
+        await helper.resetApp();
+
+        await helper.enterText('~test-Username', users.wrongPassword.username);
+        await helper.enterText('~test-Password', users.wrongPassword.password);
+        await helper.hideKeyboard();
+        await helper.tap('~test-LOGIN');
+
+        const errorMessage = await helper.waitForElement('~test-Error message');
+        expect(await errorMessage.isDisplayed()).to.equal(true);
+    });
+
+    // Skenario 5: Sorting harga terendah ke tertinggi
+    it('5. Should sort products by price low to high', async function () {
         await helper.resetApp();
 
         await helper.enterText('~test-Username', users.validUser.username);
@@ -55,6 +67,7 @@ describe('Advanced Mobile Testing - SauceDemo', function () {
         // Buka menu sorting
         await helper.tap('~test-Modal Selector Button');
 
+        // Cari pilihan sorting
         const sortOption = await $(
             'android=new UiSelector().text("Price (low to high)")'
         );
@@ -64,15 +77,12 @@ describe('Advanced Mobile Testing - SauceDemo', function () {
             timeoutMsg: 'Pilihan Price (low to high) tidak ditemukan'
         });
 
-        // Pilih opsi berdasarkan koordinat yang sudah diverifikasi
-        await driver.execute('mobile: clickGesture', {
-            x: 540,
-            y: 1194
-        });
+        // Klik langsung elemen sorting, tanpa koordinat layar
+        await sortOption.click();
 
         await driver.pause(2000);
 
-        // Ambil seluruh elemen harga menggunakan UiAutomator
+        // Ambil seluruh elemen harga
         const prices = await $$(
             'android=new UiSelector().description("test-Price")'
         );
@@ -86,8 +96,8 @@ describe('Advanced Mobile Testing - SauceDemo', function () {
         expect(firstPrice).to.equal('$7.99');
     });
 
-    // Skenario 5: Logout
-    it('5. Should logout successfully', async function () {
+    // Skenario 6: Logout
+    it('6. Should logout successfully', async function () {
         await helper.resetApp();
 
         await helper.enterText('~test-Username', users.validUser.username);
